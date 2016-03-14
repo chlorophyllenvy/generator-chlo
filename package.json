@@ -15,6 +15,7 @@
   "author": "Gingy {The Ginger Viking}",
   "license": "MIT",
   "dependencies": {
+    "jade": "^1.11.0",
     "yeoman-generator": "^0.22.5"
   }
 }
