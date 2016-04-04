@@ -5,7 +5,9 @@ var html =  {
 		'index' : jade.renderFile('app/index-page.jade', {pretty:true}),
 		'footer' : jade.renderFile('app/footer-page.jade', {pretty:true})
 	};
-// var styl = jade.renderFile('app/gulp-file.jade', {type:'Less'});
+var cssLess = false,
+cssStylus = false,
+cssSass = false;
 // List of directories that will be created. Push whatever you need to into this array
 var dirs = ['_src', '_src/js', '_src/style', 'styleguide', 'public', 'public/js', 'public/css', 'public/img', 'public/fonts', 'public/video', 'public/etc'];
 // List of files that will be created.  Push whatever you need to into this array
@@ -21,8 +23,6 @@ module.exports = generators.Base.extend({
   			default: 'Jade',
   			choices: ['Jade', 'PHP']
   		}, function(answers) {
-  			// if(answers.template === 'Jade') {this.log("Hurrah, it's Jade")};
-  			// if(answers.template === 'PHP') {this.log("Oh yeah! We <3 PHP!")};
   			done();
   		}.bind(this));
   	},
@@ -33,24 +33,32 @@ module.exports = generators.Base.extend({
   			name: 'style',
   			message: 'What will you use to write CSS?',
   			default: 'Less',
-  			choices: ['less', 'stylus', 'sass']
+  			choices: ['Less', 'Stylus', 'Sass']
   		}, function(answers) {
-        var rs = answers.style;
-        var jd = jade.renderFile('app/gulp-file.jade', {type:{rs: true}});
-        fs.writeFile('./_src/gulpy.js', jd,'utf-8');
+        switch(answers.style) {
+          case 'Less':
+          cssLess = true;
+          break;
+          case 'Stylus':
+          cssStylus = true;
+          break;
+          case 'cssSass':
+          cssSass = true;
+          break;
+        }
+        // var rs = answers.style;
+        // var concat = 'css+rs;
+        // var concat = true;
   			done();
   		}.bind(this))
   	},
-  	// style: function() {
-  	// 	fs.writeFile('gulpy.js', styl,'utf-8');
-  	// },
   	isiFooter: function() {
   		var done = this.async();
   		this.prompt({
   			type: 'confirm',
   			name: 'footer',
   			message: 'Will you need an isiFooter?',
-  			default: 'Yes'
+  			default: 'yes'
   		}, function(answers) {
   			// this.log(answers.footer);
   			if(answers.footer) {
@@ -66,6 +74,7 @@ module.exports = generators.Base.extend({
 		for (var dir in dirs) {
 			fs.mkdir(dirs[dir], function(err, stat){if(err && err.code == "EEXIST"){ return;} });
 		}
+    // Files to write
 		for (var file in fls) {
 			var string = fls[file];
 			var splt = fls[file].lastIndexOf('/');
@@ -74,5 +83,11 @@ module.exports = generators.Base.extend({
 			splt < 0 ? code = html[fls[file]] : code = html[string.slice(splt+1)];
 			fs.writeFile(fls[file]+'.html', code, 'utf-8', function(err, stat){if(err && err.code =='EEXIST'){ return; } });
 		}
+
+    // Write Gulp File
+    console.log(cssLess, cssStylus, cssSass);
+    var glp = jade.renderFile('app/gulp-file.jade', {type:{less: cssLess, stylus: cssStylus, sass:cssStylus}});
+    console.log(glp)
+    fs.writeFile('./_src/gulpfile.js', glp,'utf-8');
 	}
 });

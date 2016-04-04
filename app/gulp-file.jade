@@ -1,11 +1,11 @@
 | var gulp = require('gulp'),
 | gutil = require('gulp-util')
 | minifycss = require('gulp-minify-css'),
-| concat = require('gulp-concat');<br />
+| concat = require('gulp-concat'), 
 
 if type.less
-	| var less = require('gulp-less');
+	| cssType = require('gulp-less');
 else if type.stylus
-	| var stylus = require('gulp-stylus');
+	| cssType = require('gulp-stylus');
 else 
-	| var sass = require('gulp-sass');
+	| cssType = require('gulp-sass');
